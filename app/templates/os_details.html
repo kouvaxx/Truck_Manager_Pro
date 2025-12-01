@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <a href="/os" class="btn btn-light border shadow-sm"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <div>
+            <h2 class="fw-bold mb-0">Ordem de Serviço #{{ os.id }}</h2>
+            <div class="text-muted small">Criado em: {{ os.created_at.strftime('%d/%m/%Y às %H:%M') }}</div>
+        </div>
+        {% if os.status == 'Open' %}
+        <span class="badge bg-primary px-3 py-2 rounded-pill">Em Aberto</span>
+        {% elif os.status == 'Closed' %}
+        <span class="badge bg-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill"></i> Finalizada</span>
+        {% else %}
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">{{ os.status }}</span>
+        {% endif %}
+    </div>
+
+    <div class="d-flex gap-2">
+        {% if os.status == 'Open' %}
+        <form action="/os/{{ os.id }}/close" method="post"
+            onsubmit="return confirm('Tem certeza que deseja finalizar esta OS? Isso bloqueará edições.');">
+            <button type="submit" class="btn btn-dark shadow-sm">
+                <i class="bi bi-check-lg me-1"></i> Finalizar Serviço
+            </button>
+        </form>
+        {% elif os.status == 'Closed' %}
+        <a href="/os/{{ os.id }}/print" target="_blank" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-printer me-1"></i> Imprimir
+        </a>
+        <a href="https://wa.me/55{{ client.phone }}" target="_blank" class="btn btn-success shadow-sm">
+            <i class="bi bi-whatsapp"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between bg-white">
+                <span class="fw-bold">Serviços e Peças</span>
+                <span class="badge bg-dark">Total: R$ {{ "%.2f"|format(os.total_value) }}</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-3">Item</th>
+                            <th class="text-center">Qtd</th>
+                            <th class="text-end pe-3">Subtotal</th>
+                            {% if os.status == "Open" %}<th style="width: 50px;"></th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in os_items %}
+                        <tr>
+                            <td class="ps-3">
+                                <div class="fw-bold">{{ item.name }}</div>
+                                <div class="small text-muted">Unit: R$ {{ "%.2f"|format(item.price_at_moment) }}</div>
+                            </td>
+                            <td class="text-center align-middle">{{ item.quantity_sold }}</td>
+                            <td class="text-end pe-3 align-middle text-success fw-bold">
+                                R$ {{ "%.2f"|format(item.quantity_sold * item.price_at_moment) }}
+                            </td>
+
+                            {% if os.status == "Open" %}
+                            <td class="align-middle text-end pe-3">
+                                <button class="btn btn-sm btn-link text-danger p-0"
+                                    hx-delete="/os/{{ os.id }}/item/{{ item.id }}"
+                                    hx-confirm="Remover este item e devolver ao estoque?" hx-target="closest tr"
+                                    hx-swap="outerHTML">
+                                    <i class="bi bi-x-circle-fill fs-5"></i>
+                                </button>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                <i class="bi bi-basket me-2"></i>Nenhum item lançado.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if os.status == "Open" %}
+            <div class="card-footer bg-light p-3">
+                <form action="/os/{{ os.id }}/add_item" method="post" class="row g-2">
+                    <div class="col-8">
+                        <select name="item_id" class="form-select" required>
+                            <option value="" disabled selected>+ Adicionar Peça...</option>
+                            {% for item in inventory %}<option value="{{ item.id }}">{{ item.name }} (R$ {{
+                                item.sell_price }})</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-2"><input type="number" name="quantity" class="form-control" value="1"
+                            placeholder="Qtd"></div>
+                    <div class="col-2"><button class="btn btn-primary w-100">Add</button></div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card border-0 text-white" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
+            <div class="card-body p-4 text-center">
+                <i class="bi bi-stars fs-1 mb-2"></i>
+                <h3 class="fw-bold">Assistente Inteligente</h3>
+                <p class="opacity-75">Gere um relatório técnico e cordial para o WhatsApp do cliente.</p>
+                <button class="btn btn-light text-primary fw-bold px-4 py-2 shadow-sm"
+                    hx-post="/os/{{ os.id }}/generate_report" hx-target="#ai-result" hx-swap="innerHTML"
+                    hx-indicator="#ai-spinner">
+                    <span id="ai-spinner" class="htmx-indicator spinner-border spinner-border-sm me-2"></span>
+                    Gerar Relatório Agora
+                </button>
+                <div id="ai-result" class="mt-4 text-start text-dark"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body text-center p-4">
+                <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                    style="width: 80px; height: 80px;">
+                    <i class="bi bi-person fs-1 text-secondary"></i>
+                </div>
+                <h5 class="fw-bold">{{ client.name }}</h5>
+                <p class="text-muted">{{ client.car_model }} • {{ client.car_plate }}</p>
+                <hr>
+                <a href="https://wa.me/55{{ client.phone }}" target="_blank" class="btn btn-outline-success w-100"><i
+                        class="bi bi-whatsapp"></i> Contatar Cliente</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

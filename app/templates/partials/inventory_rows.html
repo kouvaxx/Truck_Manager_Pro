@@ -1,0 +1,46 @@
+{% for item in items %}
+<tr>
+    <td class="ps-4">
+        <div class="fw-bold">{{ item.name }}</div>
+        <div class="small text-muted">{{ item.category }}</div>
+    </td>
+    <td class="fw-bold text-primary">R$ {{ "%.2f"|format(item.sell_price) }}</td>
+    <td>
+        {% if item.quantity <= item.min_quantity %} <span
+            class="badge bg-danger-subtle text-danger border border-danger">
+            <i class="bi bi-exclamation-circle"></i> {{ item.quantity }} Baixo
+            </span>
+            {% else %}
+            <span class="badge bg-success-subtle text-success border border-success">
+                <i class="bi bi-check-circle"></i> {{ item.quantity }} Ok
+            </span>
+            {% endif %}
+    </td>
+    <td id="analysis-{{ item.id }}">
+        <button class="btn btn-sm btn-outline-primary border-0 bg-primary-subtle"
+            hx-post="/inventory/{{ item.id }}/analyze" hx-target="#analysis-{{ item.id }}" hx-swap="innerHTML"
+            hx-indicator="#spin-{{ item.id }}">
+            <i class="bi bi-stars"></i> Analisar
+        </button>
+        <span id="spin-{{ item.id }}" class="htmx-indicator ms-2 text-primary">
+            <div class="spinner-border spinner-border-sm"></div>
+        </span>
+    </td>
+    <td class="text-end pe-3">
+        <button class="btn btn-sm btn-light text-primary" hx-get="/inventory/{{ item.id }}/edit" hx-target="closest tr"
+            hx-swap="outerHTML">
+            <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-light text-danger" hx-delete="/inventory/{{ item.id }}" hx-confirm="Tem certeza?"
+            hx-swap="outerHTML" hx-target="closest tr">
+            <i class="bi bi-trash"></i>
+        </button>
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="5" class="text-center py-4 text-muted">
+        Nenhum item encontrado.
+    </td>
+</tr>
+{% endfor %}

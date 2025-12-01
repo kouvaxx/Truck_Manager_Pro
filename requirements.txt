@@ -1,0 +1,8 @@
+sqlmodel
+google-generativeai
+pandas
+fastapi
+uvicorn
+jinja2
+python-multipart
+python-dotenv

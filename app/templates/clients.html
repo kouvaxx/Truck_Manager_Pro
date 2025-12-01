@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 class="mb-4">Gerenciamento de Clientes</h2>
+
+<div class="card mb-4">
+    <div class="card-header">Novo Cliente</div>
+    <div class="card-body">
+        <form hx-post="/clients/add" hx-target="body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" name="name" class="form-control" placeholder="Nome Completo" required>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="phone" class="form-control" placeholder="Telefone" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="email" name="email" class="form-control" placeholder="Email">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="car_model" class="form-control" placeholder="Modelo do Carro" required>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="car_plate" class="form-control" placeholder="Placa" required>
+                </div>
+                <div class="col-md-12 text-end">
+                    <button type="submit" class="btn btn-primary">Cadastrar Cliente</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Carro</th>
+            <th>Placa</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for client in clients %}
+        <tr>
+            <td>{{ client.id }}</td>
+            <td>{{ client.name }}</td>
+            <td>{{ client.phone }}</td>
+            <td>{{ client.car_model }}</td>
+            <td>{{ client.car_plate }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

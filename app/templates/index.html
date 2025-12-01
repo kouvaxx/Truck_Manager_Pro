@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold text-dark">Visão Geral</h2>
+    <p class="text-muted">Bem-vindo ao painel de controle da sua oficina.</p>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 overflow-hidden">
+            <div class="card-body position-relative">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary me-3">
+                        <i class="bi bi-cash-stack fs-4"></i>
+                    </div>
+                    <h6 class="card-subtitle text-muted text-uppercase fw-bold" style="font-size: 0.8rem;">Valor em
+                        Estoque (Custo)</h6>
+                </div>
+                <h2 class="card-title fw-bold mb-0">R$ {{ "%.2f"|format(total_inventory_value) }}</h2>
+                <small class="text-muted">Dinheiro investido em peças</small>
+            </div>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-primary" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 overflow-hidden">
+            <div class="card-body position-relative">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle text-warning me-3">
+                        <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                    </div>
+                    <h6 class="card-subtitle text-muted text-uppercase fw-bold" style="font-size: 0.8rem;">Alertas de
+                        Reposição</h6>
+                </div>
+                <h2 class="card-title fw-bold mb-0">{{ low_stock_count }} <span
+                        class="fs-5 text-muted fw-normal">Itens</span></h2>
+                <small class="text-muted">Abaixo do mínimo exigido</small>
+            </div>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-warning" style="width: {{ low_stock_count * 10 }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 overflow-hidden">
+            <div class="card-body position-relative">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success me-3">
+                        <i class="bi bi-tools fs-4"></i>
+                    </div>
+                    <h6 class="card-subtitle text-muted text-uppercase fw-bold" style="font-size: 0.8rem;">Em
+                        Atendimento</h6>
+                </div>
+                <h2 class="card-title fw-bold mb-0">{{ open_os_count }} <span
+                        class="fs-5 text-muted fw-normal">Veículos</span></h2>
+                <small class="text-muted">Ordens de serviço abertas</small>
+            </div>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-success" style="width: 50%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h5 class="fw-bold text-dark mb-3">Acesso Rápido</h5>
+<div class="row g-3">
+    <div class="col-md-4">
+        <a href="/os" class="btn btn-white w-100 p-3 text-start border shadow-sm hover-shadow transition">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-plus-circle-fill text-primary fs-3 me-3"></i>
+                <div>
+                    <div class="fw-bold text-dark">Nova Ordem de Serviço</div>
+                    <div class="small text-muted">Receber um veículo</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/inventory" class="btn btn-white w-100 p-3 text-start border shadow-sm hover-shadow transition">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-box-seam-fill text-primary fs-3 me-3"></i>
+                <div>
+                    <div class="fw-bold text-dark">Cadastrar Peça</div>
+                    <div class="small text-muted">Adicionar item ao estoque</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/clients" class="btn btn-white w-100 p-3 text-start border shadow-sm hover-shadow transition">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-person-plus-fill text-primary fs-3 me-3"></i>
+                <div>
+                    <div class="fw-bold text-dark">Novo Cliente</div>
+                    <div class="small text-muted">Cadastrar ficha técnica</div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<style>
+    /* CSS inline extra para efeito hover */
+    .hover-shadow:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+    }
+
+    .transition {
+        transition: all 0.2s ease;
+    }
+
+    .btn-white {
+        background: white;
+    }
+</style>
+{% endblock %}
